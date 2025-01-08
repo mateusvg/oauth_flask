@@ -23,15 +23,34 @@ CLIENTS = {
 # Token de acesso fictício para teste
 ACCESS_TOKENS = {}
 
+# Definindo a classe Client
+class Client:
+    def __init__(self, client_id, client_secret, base_url):
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.base_url = base_url
+
+    def check_client_secret(self, client_secret):
+        return self.client_secret == client_secret
+
+# Instanciando clientes reais
+clients = {
+    "client_key": Client(
+        client_id="client_key",
+        client_secret="example_client_secret",
+        base_url="https://seu-conector-de-pagamento.com"
+    )
+}
 
 class ClientCredentialsGrant(grants.ClientCredentialsGrant):
     def authenticate_client(self, client_id, client_secret):
-        if client_id == CLIENTS['client_key']['client_id'] and client_secret == CLIENTS['client_key']['client_secret']:
-            return {"client_id": client_id}
+        client = clients.get(client_id)
+        if client and client.check_client_secret(client_secret):
+            return client
 
     def create_access_token(self, token, client, grant_user):
         # Salva o token gerado para validação futura
-        ACCESS_TOKENS[client['client_id']] = token['access_token']
+        ACCESS_TOKENS[client.client_id] = token['access_token']
         return token
 
 
@@ -72,7 +91,7 @@ def process_payment():
 
 @app.route('/payment/connector', methods=['POST'])
 def onboard_connector():
-    """Endpoint para cadastro de conectores de pagamento."""
+    """Endpoint para cadastro de conectores de pagamento.""" 
     data = request.json
     required_fields = ['payment_connector_name', 'base_url', 'client_key', 'client_secret']
     if not all(field in data for field in required_fields):
