@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from authlib.integrations.flask_oauth2 import AuthorizationServer
 from authlib.oauth2.rfc6749 import grants
 from authlib.common.security import generate_token
+from authlib.oauth2.rfc6749.models import Client
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'sua-chave-secreta'
@@ -34,6 +35,20 @@ class ClientCredentialsGrant(grants.ClientCredentialsGrant):
 
 # Registra o grant type
 authorization.register_grant(ClientCredentialsGrant)
+
+
+# Função para recuperar o cliente
+def query_client(client_id):
+    if client_id == CLIENTS['client_key']:
+        return Client(
+            client_id=CLIENTS['client_key'],
+            client_secret=CLIENTS['client_secret'],
+            token_endpoint_auth_method='client_secret_basic'
+        )
+    return None
+
+# Registra a função de consulta do cliente
+authorization.init_app(app, query_client=query_client)
 
 
 @app.route('/oauth/token', methods=['POST'])
