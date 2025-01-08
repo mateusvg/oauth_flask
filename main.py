@@ -1,129 +1,67 @@
-from flask import Flask, request, jsonify
-from authlib.integrations.flask_oauth2 import AuthorizationServer
-from authlib.oauth2.rfc6749 import grants
-from authlib.common.security import generate_token
-
+from flask import Flask, request, jsonify, redirect
+import requests
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'sua-chave-secreta'
-app.config['OAUTH2_PROVIDER_TOKEN_EXPIRES_IN'] = 3600  # Token válido por 1 hora
 
-# Inicializa o AuthorizationServer
-authorization = AuthorizationServer(app)
+# Variáveis de configuração (ajustadas com os seus dados)
+OAUTH_URL = "https://github.com/login/oauth/access_token"  # URL para obter o token do GitHub
+CLIENT_ID = "Ov23liBQqZ86S7yMjC2A"  # Seu client_id do GitHub
+CLIENT_SECRET = "29f28cf34a9c06b2e8d1cc74679e6f7b2a58399b"  # Seu client_secret do GitHub
+SCOPE = "repo"  # Defina o escopo conforme necessário (exemplo: 'repo' para acessar repositórios)
+REDIRECT_URI = "http://oauth-flask.onrender.com/callback"  # URL de redirecionamento após autenticação
 
-# Dados fictícios para OAuth2
-CLIENTS = {
-    "client_key": {
-        "client_id": "client_key",
-        "client_secret": "example_client_secret",
-        "base_url": "https://seu-conector-de-pagamento.com"
-    }
-}
+# URL do provedor OAuth (GitHub)
+AUTH_URL = "https://github.com/login/oauth/authorize"  # URL de autorização do GitHub
 
-# Token de acesso fictício para teste
-ACCESS_TOKENS = {}
+@app.route('/login', methods=['GET'])
+def login():
+    # Construindo a URL de autorização para o GitHub
+    authorization_url = f"{AUTH_URL}?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&scope={SCOPE}&response_type=code"
+    return redirect(authorization_url)
 
-# Definindo a classe Client
-class Client:
-    def __init__(self, client_id, client_secret, base_url):
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.base_url = base_url
 
-    def check_client_secret(self, client_secret):
-        return self.client_secret == client_secret
+@app.route('/callback', methods=['GET'])
+def callback():
+    # O GitHub redireciona para cá com o código de autorização
+    code = request.args.get('code')
     
-    def check_endpoint_auth_method(self, method, endpoint):
-        # Verifica se o método de autenticação é "client_secret_basic"
-        if method == 'client_secret_basic':
-            return True
-        return False
-    
-    def check_grant_type(self, grant_type):
-        # Verifica se o tipo de concessão é "client_credentials"
-        if grant_type == 'client_credentials':
-            return True
-        return False
+    if not code:
+        return jsonify({
+            'status': 'error',
+            'message': 'Authorization code missing'
+        }), 400
 
-# Instanciando clientes reais
-clients = {
-    "client_key": Client(
-        client_id="client_key",
-        client_secret="example_client_secret",
-        base_url="https://seu-conector-de-pagamento.com"
-    )
-}
-
-class ClientCredentialsGrant(grants.ClientCredentialsGrant):
-    def authenticate_client(self, client_id, client_secret):
-        client = clients.get(client_id)
-        if client and client.check_client_secret(client_secret):
-            return client
-
-    def create_access_token(self, token, client, grant_user):
-        # Salva o token gerado para validação futura
-        ACCESS_TOKENS[client.client_id] = token['access_token']
-        return token
-
-
-# Registra o grant type
-authorization.register_grant(ClientCredentialsGrant)
-
-# Função para consultar o cliente
-def query_client(client_id):
-    client_data = CLIENTS.get(client_id)
-    if client_data:
-        return Client(client_data["client_id"], client_data["client_secret"], client_data["base_url"])
-    return None
-
-# Configura o AuthorizationServer para usar o query_client
-authorization.query_client = query_client
-
-
-@app.route('/oauth/token', methods=['POST'])
-def generate_token():
-    """Endpoint para geração de tokens OAuth2."""
-    return authorization.create_token_response()
-
-
-@app.route('/payment', methods=['POST'])
-def process_payment():
-    """Endpoint para processar pagamentos."""
-    token = request.headers.get('Authorization')
-    if not token or token.split()[1] not in ACCESS_TOKENS.values():
-        return jsonify({'error': 'unauthorized'}), 401
-
-    payment_data = request.json
-    if not payment_data or 'amount' not in payment_data:
-        return jsonify({'error': 'invalid_data'}), 400
-
-    # Processa o pagamento (simulação)
-    return jsonify({
-        'status': 'success',
-        'message': f"Pagamento de {payment_data['amount']} processado com sucesso."
-    })
-
-
-@app.route('/payment/connector', methods=['POST'])
-def onboard_connector():
-    """Endpoint para cadastro de conectores de pagamento.""" 
-    data = request.json
-    required_fields = ['payment_connector_name', 'base_url', 'client_key', 'client_secret']
-    if not all(field in data for field in required_fields):
-        return jsonify({'error': 'missing_fields'}), 400
-
-    # Salva o conector no banco (simulação)
-    connector_data = {
-        'name': data['payment_connector_name'],
-        'base_url': data['base_url'],
-        'client_key': data['client_key'],
-        'client_secret': data['client_secret']
+    # Dados para obter o token OAuth usando o código de autorização
+    data = {
+        'grant_type': 'authorization_code',
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET,
+        'redirect_uri': REDIRECT_URI,
+        'code': code
     }
-    return jsonify({
-        'status': 'success',
-        'message': 'Conector cadastrado com sucesso.',
-        'connector': connector_data
-    })
+
+    try:
+        # Fazendo a requisição para o servidor OAuth (GitHub) para trocar o código por um token
+        response = requests.post(OAUTH_URL, data=data, headers={'Accept': 'application/json'})
+
+        if response.status_code == 200:
+            token = response.json().get('access_token')
+            return jsonify({
+                'status': 'success',
+                'access_token': token
+            }), 200
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': 'Failed to fetch the token',
+                'details': response.json()
+            }), response.status_code
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
 
 
 if __name__ == '__main__':
