@@ -34,12 +34,12 @@ class Client:
         return self.client_secret == client_secret
 
 # Instanciando clientes reais
-CLIENTS = {
-  "client_key": Client(
-    client_id="client_key",
-    client_secret="example_client_secret",
-    base_url="https://seu-conector-de-pagamento.com"
-  )
+clients = {
+    "client_key": Client(
+        client_id="client_key",
+        client_secret="example_client_secret",
+        base_url="https://seu-conector-de-pagamento.com"
+    )
 }
 
 class ClientCredentialsGrant(grants.ClientCredentialsGrant):
@@ -59,7 +59,7 @@ authorization.register_grant(ClientCredentialsGrant)
 
 # Função para consultar o cliente
 def query_client(client_id):
-  return clients.get(client_id)
+  return CLIENTS.get(client_id)
 
 # Configura o AuthorizationServer para usar o query_client
 authorization.query_client = query_client
