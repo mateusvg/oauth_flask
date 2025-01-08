@@ -38,6 +38,12 @@ class Client:
         if method == 'client_secret_basic':
             return True
         return False
+    
+    def check_grant_type(self, grant_type):
+        # Verifica se o tipo de concessão é "client_credentials"
+        if grant_type == 'client_credentials':
+            return True
+        return False
 
 # Instanciando clientes reais
 clients = {
