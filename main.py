@@ -59,7 +59,10 @@ authorization.register_grant(ClientCredentialsGrant)
 
 # Função para consultar o cliente
 def query_client(client_id):
-  return CLIENTS.get(client_id)
+    client_data = CLIENTS.get(client_id)
+    if client_data:
+        return Client(client_data["client_id"], client_data["client_secret"], client_data["base_url"])
+    return None
 
 # Configura o AuthorizationServer para usar o query_client
 authorization.query_client = query_client
