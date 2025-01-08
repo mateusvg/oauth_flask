@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from werkzeug.utils import cached_property
 from flask_oauthlib.provider import OAuth2Provider
 
 app = Flask(__name__)
