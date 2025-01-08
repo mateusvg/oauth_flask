@@ -13,9 +13,11 @@ authorization = AuthorizationServer(app)
 
 # Dados fictícios para OAuth2
 CLIENTS = {
-    "client_key": "example_client_key",
-    "client_secret": "example_client_secret",
-    "base_url": "https://seu-conector-de-pagamento.com"
+    "client_key": {
+        "client_id": "client_key",
+        "client_secret": "example_client_secret",
+        "base_url": "https://seu-conector-de-pagamento.com"
+    }
 }
 
 # Token de acesso fictício para teste
@@ -24,7 +26,7 @@ ACCESS_TOKENS = {}
 
 class ClientCredentialsGrant(grants.ClientCredentialsGrant):
     def authenticate_client(self, client_id, client_secret):
-        if client_id == CLIENTS['client_key'] and client_secret == CLIENTS['client_secret']:
+        if client_id == CLIENTS['client_key']['client_id'] and client_secret == CLIENTS['client_key']['client_secret']:
             return {"client_id": client_id}
 
     def create_access_token(self, token, client, grant_user):
@@ -36,6 +38,12 @@ class ClientCredentialsGrant(grants.ClientCredentialsGrant):
 # Registra o grant type
 authorization.register_grant(ClientCredentialsGrant)
 
+# Função para consultar o cliente
+def query_client(client_id):
+    return CLIENTS.get(client_id, None)
+
+# Configura o AuthorizationServer para usar o query_client
+authorization.query_client = query_client
 
 
 @app.route('/oauth/token', methods=['POST'])
