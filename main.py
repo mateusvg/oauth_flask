@@ -1,68 +1,47 @@
-from flask import Flask, request, jsonify, redirect
-import requests
+from flask import Flask, request, jsonify
+from authlib.integrations.flask_oauth2 import AuthorizationServer, ResourceProtector
+from authlib.oauth2.rfc6749 import OAuth2Error
+from werkzeug.security import gen_salt
 
+# Criando o aplicativo Flask
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['OAUTH2_CLIENTS'] = {
+    'client_id': 'client_key',
+    'client_secret': 'client_secret'
+}
 
-# Variáveis de configuração (ajustadas com os seus dados)
-OAUTH_URL = "https://github.com/login/oauth/access_token"  # URL para obter o token do GitHub
-CLIENT_ID = "Ov23liBQqZ86S7yMjC2A"  # Seu client_id do GitHub
-CLIENT_SECRET = "29f28cf34a9c06b2e8d1cc74679e6f7b2a58399b"  # Seu client_secret do GitHub
-SCOPE = "repo"  # Defina o escopo conforme necessário (exemplo: 'repo' para acessar repositórios)
-REDIRECT_URI = "http://oauth-flask.onrender.com/callback"  # URL de redirecionamento após autenticação
+# Iniciar o Authorization Server
+authorization = AuthorizationServer(app)
 
-# URL do provedor OAuth (GitHub)
-AUTH_URL = "https://github.com/login/oauth/authorize"  # URL de autorização do GitHub
+# Protector de recursos
+require_oauth = ResourceProtector()
 
-@app.route('/login', methods=['GET'])
-def login():
-    # Construindo a URL de autorização para o GitHub
-    authorization_url = f"{AUTH_URL}?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&scope={SCOPE}&response_type=code"
-    return redirect(authorization_url)
+# Função para autenticação do cliente (verificação de client_id e client_secret)
+def authenticate_client(client_id, client_secret):
+    if client_id == app.config['OAUTH2_CLIENTS']['client_id'] and client_secret == app.config['OAUTH2_CLIENTS']['client_secret']:
+        return True
+    return False
 
+# Função para gerenciar o token de acesso
+@app.route('/token', methods=['POST'])
+def issue_token():
+    client_id = request.form.get('client_id')
+    client_secret = request.form.get('client_secret')
 
-@app.route('/callback', methods=['GET'])
-def callback():
-    # O GitHub redireciona para cá com o código de autorização
-    code = request.args.get('code')
-    
-    if not code:
-        return jsonify({
-            'status': 'error',
-            'message': 'Authorization code missing'
-        }), 400
+    # Verifica se o cliente foi autenticado
+    if not authenticate_client(client_id, client_secret):
+        return jsonify({'error': 'Unauthorized'}), 401
 
-    # Dados para obter o token OAuth usando o código de autorização
-    data = {
-        'grant_type': 'authorization_code',
-        'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET,
-        'redirect_uri': REDIRECT_URI,
-        'code': code
-    }
+    # Emite o token de acesso
+    token = gen_salt(32)  # Um token simples para a demonstração
+    return jsonify({'access_token': token, 'token_type': 'bearer'}), 200
 
-    try:
-        # Fazendo a requisição para o servidor OAuth (GitHub) para trocar o código por um token
-        response = requests.post(OAUTH_URL, data=data, headers={'Accept': 'application/json'})
-
-        if response.status_code == 200:
-            token = response.json().get('access_token')
-            return jsonify({
-                'status': 'success',
-                'access_token': token
-            }), 200
-        else:
-            return jsonify({
-                'status': 'error',
-                'message': 'Failed to fetch the token',
-                'details': response.json()
-            }), response.status_code
-
-    except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
-
+# Recurso protegido que requer OAuth 2.0
+@app.route('/api/protected', methods=['GET'])
+@require_oauth('profile')
+def protected_resource():
+    return jsonify({'message': 'Você acessou um recurso protegido'}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
