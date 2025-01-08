@@ -1,14 +1,14 @@
 from flask import Flask, request, jsonify
-from werkzeug.utils import cached_property
-from flask_oauthlib.provider import OAuth2Provider
 from authlib.integrations.flask_oauth2 import AuthorizationServer
+from authlib.oauth2.rfc6749 import grants
+from authlib.common.security import generate_token
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'sua-chave-secreta'
 app.config['OAUTH2_PROVIDER_TOKEN_EXPIRES_IN'] = 3600  # Token válido por 1 hora
 
-# Inicializa o provedor OAuth2
-oauth = OAuth2Provider(app)
+# Inicializa o AuthorizationServer
+authorization = AuthorizationServer(app)
 
 # Dados fictícios para OAuth2
 CLIENTS = {
@@ -21,33 +21,35 @@ CLIENTS = {
 ACCESS_TOKENS = {}
 
 
+class ClientCredentialsGrant(grants.ClientCredentialsGrant):
+    def authenticate_client(self, client_id, client_secret):
+        if client_id == CLIENTS['client_key'] and client_secret == CLIENTS['client_secret']:
+            return {"client_id": client_id}
+
+    def create_access_token(self, token, client, grant_user):
+        # Salva o token gerado para validação futura
+        ACCESS_TOKENS[client['client_id']] = token['access_token']
+        return token
+
+
+# Registra o grant type
+authorization.register_grant(ClientCredentialsGrant)
+
+
 @app.route('/oauth/token', methods=['POST'])
 def generate_token():
-    """Rota para gerar o token de acesso OAuth2"""
-    client_key = request.form.get('client_id')
-    client_secret = request.form.get('client_secret')
-
-    if client_key == CLIENTS['client_key'] and client_secret == CLIENTS['client_secret']:
-        # Gera um token simples
-        access_token = 'token_simulado_123456'
-        ACCESS_TOKENS[client_key] = access_token
-        return jsonify({
-            'access_token': access_token,
-            'token_type': 'Bearer',
-            'expires_in': app.config['OAUTH2_PROVIDER_TOKEN_EXPIRES_IN']
-        })
-    return jsonify({'error': 'invalid_client'}), 401
+    """Endpoint para geração de tokens OAuth2."""
+    return authorization.create_token_response()
 
 
 @app.route('/payment', methods=['POST'])
 def process_payment():
-    """Rota para receber os dados de pagamento"""
+    """Endpoint para processar pagamentos."""
     token = request.headers.get('Authorization')
     if not token or token.split()[1] not in ACCESS_TOKENS.values():
         return jsonify({'error': 'unauthorized'}), 401
 
     payment_data = request.json
-    # Valida os dados recebidos
     if not payment_data or 'amount' not in payment_data:
         return jsonify({'error': 'invalid_data'}), 400
 
@@ -60,7 +62,7 @@ def process_payment():
 
 @app.route('/payment/connector', methods=['POST'])
 def onboard_connector():
-    """Rota para cadastrar um novo conector de pagamento"""
+    """Endpoint para cadastro de conectores de pagamento."""
     data = request.json
     required_fields = ['payment_connector_name', 'base_url', 'client_key', 'client_secret']
     if not all(field in data for field in required_fields):
