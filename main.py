@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from werkzeug.utils import cached_property
 from flask_oauthlib.provider import OAuth2Provider
+from authlib.integrations.flask_oauth2 import AuthorizationServer
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'sua-chave-secreta'
