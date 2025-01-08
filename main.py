@@ -32,6 +32,12 @@ class Client:
 
     def check_client_secret(self, client_secret):
         return self.client_secret == client_secret
+    
+    def check_endpoint_auth_method(self, method, endpoint):
+        # Verifica se o método de autenticação é "client_secret_basic"
+        if method == 'client_secret_basic':
+            return True
+        return False
 
 # Instanciando clientes reais
 clients = {
