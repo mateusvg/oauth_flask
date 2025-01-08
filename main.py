@@ -31,6 +31,7 @@ def issue_token():
 
     # Verifica se o cliente foi autenticado
     if not authenticate_client(client_id, client_secret):
+        print(f"Falha na autenticação. client_id: {client_id}, client_secret: {client_secret}")
         return jsonify({'error': 'Unauthorized'}), 401
 
     # Emite o token de acesso
