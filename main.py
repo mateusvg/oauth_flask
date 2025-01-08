@@ -2,7 +2,7 @@ from flask import Flask, redirect, url_for
 
 app = Flask(__name__)
 
-@app.route('/home', methods=['GET'])
+@app.route('/home', methods=['POST'])
 def home():
     return "Bem-vindo à página inicial!"
 
