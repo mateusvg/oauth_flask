@@ -22,7 +22,7 @@ def authenticate_client(client_id, client_secret):
     return False
 
 
-@app.route('/token', methods=['POST'])
+@app.route('/token', methods=['GET'])
 def issue_token():
     """Emite um token de acesso quando o cliente se autentica corretamente."""
     request_data = request.get_data(as_text=True)
