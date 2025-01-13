@@ -13,119 +13,119 @@ def generate_token():
     "scope": "profile email"
 })
     
-@app.route('/capabilities', methods=['POST'])
-def generate():
-    return jsonify(
-  {
-  "localizationIdentifier": "CONNECTOR_CYBERSOURCE",
-  "connectPath": "/oauth2/config/gocardless/setup",
-  "merchantAccountPropertiesDefinitions": [
-    {
-      "keyName": "consumerKey",
-      "description": "The consumer key of the merchant account",
-      "sensitive": False,
-      "required": True
-    },
-    {
-      "keyName": "consumerSecret",
-      "description": "The consumer secret of the merchant account",
-      "sensitive": True,
-      "required": True
-    }
-  ],
-  "merchantAccountParametersDefinitions": [
-    {
-      "name": "consumerKey",
-      "type": "string",
-      "sensitive": False,
-      "required": True
-    },
-    {
-      "name": "consumerSecret",
-      "type": "string",
-      "sensitive": True,
-      "required": True
-    }
-  ],
-  "paymentMethodDefinitions": [
-    {
-      "type": "CARD",
-      "propertyDefinitions": [
-        {
-          "name": "cardHolderName",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 255
-        },
-        {
-          "name": "number",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 50
-        },
-        {
-          "name": "securityCode",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 40,
-          "secret": True
-        },
-        {
-          "name": "expirationMonth",
-          "type": "integer",
-          "minLength": 1,
-          "maxLength": 2
-        },
-        {
-          "name": "expirationYear",
-          "type": "integer",
-          "minLength": 2,
-          "maxLength": 4
-        },
-        {
-          "name": "brand",
-          "type": "string",
-          "readOnly": True,
-          "minLength": 1,
-          "maxLength": 255
-        }
-      ],
-      "supportedOperations": [
-        "PREAUTHORIZATION",
-        "PREAUTHORIZATION_PARTIAL_CAPTURE",
-        "DIRECT_SALE",
-        "REFUND",
-        "PARTIAL_REFUND"
-      ]
-    },
-    {
-      "type": "ACH",
-      "propertyDefinitions": [
-        {
-          "name": "institution",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 255
-        },
-        {
-          "name": "transit",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 255
-        }
-      ],
-      "supportedOperations": [
-        "PREAUTHORIZATION",
-        "PREAUTHORIZATION_PARTIAL_CAPTURE",
-        "DIRECT_SALE",
-        "REFUND",
-        "PARTIAL_REFUND"
-      ]
-    }
-  ],
-  "invoiceDetailLevel": "SUMMARY"
-}
-)
+# @app.route('/capabilities', methods=['POST'])
+# def generate():
+#     return jsonify(
+#   {
+#   "localizationIdentifier": "CONNECTOR_CYBERSOURCE",
+#   "connectPath": "/oauth2/config/gocardless/setup",
+#   "merchantAccountPropertiesDefinitions": [
+#     {
+#       "keyName": "consumerKey",
+#       "description": "The consumer key of the merchant account",
+#       "sensitive": False,
+#       "required": True
+#     },
+#     {
+#       "keyName": "consumerSecret",
+#       "description": "The consumer secret of the merchant account",
+#       "sensitive": True,
+#       "required": True
+#     }
+#   ],
+#   "merchantAccountParametersDefinitions": [
+#     {
+#       "name": "consumerKey",
+#       "type": "string",
+#       "sensitive": False,
+#       "required": True
+#     },
+#     {
+#       "name": "consumerSecret",
+#       "type": "string",
+#       "sensitive": True,
+#       "required": True
+#     }
+#   ],
+#   "paymentMethodDefinitions": [
+#     {
+#       "type": "CARD",
+#       "propertyDefinitions": [
+#         {
+#           "name": "cardHolderName",
+#           "type": "string",
+#           "minLength": 1,
+#           "maxLength": 255
+#         },
+#         {
+#           "name": "number",
+#           "type": "string",
+#           "minLength": 1,
+#           "maxLength": 50
+#         },
+#         {
+#           "name": "securityCode",
+#           "type": "string",
+#           "minLength": 1,
+#           "maxLength": 40,
+#           "secret": True
+#         },
+#         {
+#           "name": "expirationMonth",
+#           "type": "integer",
+#           "minLength": 1,
+#           "maxLength": 2
+#         },
+#         {
+#           "name": "expirationYear",
+#           "type": "integer",
+#           "minLength": 2,
+#           "maxLength": 4
+#         },
+#         {
+#           "name": "brand",
+#           "type": "string",
+#           "readOnly": True,
+#           "minLength": 1,
+#           "maxLength": 255
+#         }
+#       ],
+#       "supportedOperations": [
+#         "PREAUTHORIZATION",
+#         "PREAUTHORIZATION_PARTIAL_CAPTURE",
+#         "DIRECT_SALE",
+#         "REFUND",
+#         "PARTIAL_REFUND"
+#       ]
+#     },
+#     {
+#       "type": "ACH",
+#       "propertyDefinitions": [
+#         {
+#           "name": "institution",
+#           "type": "string",
+#           "minLength": 1,
+#           "maxLength": 255
+#         },
+#         {
+#           "name": "transit",
+#           "type": "string",
+#           "minLength": 1,
+#           "maxLength": 255
+#         }
+#       ],
+#       "supportedOperations": [
+#         "PREAUTHORIZATION",
+#         "PREAUTHORIZATION_PARTIAL_CAPTURE",
+#         "DIRECT_SALE",
+#         "REFUND",
+#         "PARTIAL_REFUND"
+#       ]
+#     }
+#   ],
+#   "invoiceDetailLevel": "SUMMARY"
+# }
+# )
     
     
 if __name__ == '__main__':
