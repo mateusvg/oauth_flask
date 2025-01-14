@@ -76,6 +76,7 @@ def capabilities():
     print("/capabilities++++++++++++++++++++++")
     print("Request Headers:", request.headers)
     print("Request JSON:", request.get_json())
+    print("/capabilities++++++++++++++++++++++")
     return jsonify(
   {
   "localizationIdentifier": "CONNECTOR_CYBERSOURCE",
