@@ -192,6 +192,10 @@ def capabilities():
     
 @app.route('/preAuthorizations', methods=['POST'])
 def preAuthorizations():
+    print("/preAuthorizations++++++++++++++++++++++")
+    print("Request Headers:", request.headers)
+    print("Request JSON:", request)
+    print("/preAuthorizations++++++++++++++++++++++")
     return jsonify({
   "id": "ca4f9e54-8af9-11ea-bc55-0242ac130003",
   "paymentMethodToken": "d290f1ee-6c54-4b01-90e6-d701748f0851",
@@ -211,6 +215,10 @@ def preAuthorizations():
     
 @app.route('/preAuthorizations/<preAuthorizationId>', methods=['POST'])
 def preAuthorizationId(preAuthorizationId):
+    print("/preAuthorizationId++++++++++++++++++++++")
+    print("Request Headers:", request.headers)
+    print("Request JSON:", request)
+    print("/preAuthorizationId++++++++++++++++++++++")
     return jsonify({
   "connectorInvocationContext": {
     "config": {
@@ -223,6 +231,364 @@ def preAuthorizationId(preAuthorizationId):
     "merchantOfRecordType": "TENANT"
   }
 })
+    
+@app.route('/payments', methods=['POST'])
+def payments():
+    print("/payments++++++++++++++++++++++")
+    print("Request Headers:", request.headers)
+    print("Request JSON:", request)
+    print("/payments++++++++++++++++++++++")
+    return jsonify({
+  "id": "paymentId",
+  "paymentMethodToken": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+  "amount": "1000.00",
+  "currency": "USD",
+  "connectorInvocationContext": {
+    "config": {
+      "merchantParameters": {
+        "merchantParam1": "value1"
+      }
+    },
+    "tenant": "APPDIRECT",
+    "merchantOfRecordId": "APPDIRECT",
+    "merchantOfRecordType": "TENANT"
+  },
+  "intents": [
+    {
+      "targetIdentifier": "7e80b37a-448c-468c-ab23-fc63793e3e92",
+      "targetType": "INVOICE",
+      "amountToPay": 10,
+      "content": "{ \"id\": \"7e80b37a-448c-468c-ab23-fc63793e3e92\" \"invoiceNumber\": \"1111\" \"status\": \"UNPAID\" \"currency\": \"USD\" \"invoiceDate\": \"2019-01-27\" \"lines\": [ \"id\": \"invoiceLineId\" \"description\": \"elastic.io - Recurring Edition - Monthly Fee Period from 12/27/18 to 01/27/19\" \"quantity\": \"1.00\" \"unitPrice\": \"10.00\" \"total\": \"10.00\" \"period\": \"start\": \"2018-12-27\" \"end\": \"2019-01-27\" \"orderRef\": \"orderId\", \"id\": \"invoiceLineId2\" \"description\": \"product - Recurring Edition - Monthly Fee Period from 12/27/18 to 01/27/19\" \"quantity\": \"4.00\" \"unitPrice\": \"50.00\" \"total\": \"200.00\" \"period\": \"start\": \"2018-12-27\" \"end\": \"2019-01-27\" \"orderRef\": \"orderId2\" ] \"totalTax\": \"30.00\" \"total\": \"240.00\" }"
+    }
+  ]
+})
+    
+@app.route('/tokenizeAndPay', methods=['POST'])
+def tokenizeAndPay():
+    print("/tokenizeAndPay++++++++++++++++++++++")
+    print("Request Headers:", request.headers)
+    print("Request JSON:", request)
+    print("/tokenizeAndPay++++++++++++++++++++++")
+    return jsonify({
+  "transactionMode": "LIVE",
+  "connectorInvocationContext": {
+    "config": {
+      "merchantParameters": {
+        "merchantParam1": "value1"
+      }
+    },
+    "tenant": "APPDIRECT",
+    "merchantOfRecordId": "APPDIRECT",
+    "merchantOfRecordType": "TENANT",
+    "connectorId": "6a9267f3-6f37-4a33-863e-e1fe99fa1bf6"
+  },
+  "paymentRequest": {
+    "id": "string",
+    "amount": "string",
+    "currency": "AOP",
+    "intents": [
+      {
+        "targetIdentifier": "string",
+        "targetType": "string",
+        "amountToPay": "string",
+        "content": "string"
+      }
+    ],
+    "paymentProperties": {
+      "additionalProp1": "string",
+      "additionalProp2": "string",
+      "additionalProp3": "string"
+    }
+  },
+  "tokenizationRequest": {
+    "paymentMethod": {
+      "type": "CARD",
+      "properties": {
+        "number": "4111111111111111",
+        "securityCode": "123",
+        "cardHolderName": "Bob Dylan",
+        "expirationMonth": "5",
+        "expirationYear": "2019"
+      },
+      "status": "SUCCESS"
+    }
+  }
+})
+
+@app.route('/payments/<paymentId>', methods=['POST'])
+def paymentId(paymentId):
+    print("/paymentId++++++++++++++++++++++")
+    print(paymentId)
+    print("Request Headers:", request.headers)
+    print("Request JSON:", request)
+    print("/paymentId++++++++++++++++++++++")
+    return jsonify({
+  "PaymentMethod": {
+    "type": "CARD",
+    "token": "tokenId",
+    "properties": {
+      "number": "4111111111111111",
+      "securityCode": "123",
+      "cardHolderName": "Bob Dylan",
+      "expirationMonth": "5",
+      "expirationYear": "2019"
+    }
+  },
+  "connectorInvocationContext": {
+    "config": {
+      "merchantParameters": {
+        "merchantParam1": "value1"
+      }
+    },
+    "tenant": "APPDIRECT",
+    "merchantOfRecordId": "APPDIRECT",
+    "merchantOfRecordType": "TENANT"
+  }
+})
+    
+    
+@app.route('/payments/initRedirect', methods=['POST'])
+def initRedirect():
+    print("/initRedirect++++++++++++++++++++++")
+    print("Request Headers:", request.headers)
+    print("Request JSON:", request)
+    print("/initRedirect++++++++++++++++++++++")
+    return jsonify({
+  "invoiceNumber": "1232",
+  "paymentMethodId": "3221",
+  "partyType": "USER",
+  "partyId": "da2bf844-5058-4a4d-bd57-0b1e82838f1f",
+  "ownerUserId": "4db155c6-4459-46e3-984f-fdb3e4a1a2e6",
+  "ownerCompanyId": "15b26f6b-f252-4b78-890b-942aaf9a9983",
+  "userFlow": "BILLING_INFO",
+  "isSessionImpersonated": False,
+  "isChannelAssistedFlow": False,
+  "isResellerAssistedFlow": False,
+  "returnUrlSuccess": "https://success.com",
+  "returnUrlFailure": "https://failure.com",
+  "locale": "en-US",
+  "amount": "1000.00",
+  "connectorInvocationContext": {
+    "config": {
+      "merchantParameters": {
+        "merchantParam1": "value1"
+      }
+    },
+    "tenant": "APPDIRECT",
+    "merchantOfRecordId": "APPDIRECT",
+    "merchantOfRecordType": "TENANT"
+  }
+})
+    
+@app.route('/payments/finalizeRedirect', methods=['POST'])
+def finalizeRedirect():
+    print("/finalizeRedirect++++++++++++++++++++++")
+    print("Request Headers:", request.headers)
+    print("Request JSON:", request)
+    print("/finalizeRedirect++++++++++++++++++++++")
+    return jsonify({
+  "amount": "1000.00",
+  "currency": "USD",
+  "parameters": {
+    "adPaymentUuid": "47d1ed9a-7e89-49f5-8724-b057a49abb8c"
+  },
+  "connectorInvocationContext": {
+    "config": {
+      "merchantParameters": {
+        "merchantParam1": "value1"
+      }
+    },
+    "tenant": "APPDIRECT",
+    "merchantOfRecordId": "APPDIRECT",
+    "merchantOfRecordType": "TENANT"
+  }
+})
+
+
+@app.route('/refunds', methods=['POST'])
+def refunds():
+    print("/refunds++++++++++++++++++++++")
+    print("Request Headers:", request.headers)
+    print("Request JSON:", request)
+    print("/refunds++++++++++++++++++++++")
+    return jsonify({
+  "id": "paymentId",
+  "paymentId": "paymentId",
+  "amount": "1000.00",
+  "currency": "USD",
+  "connectorInvocationContext": {
+    "config": {
+      "merchantParameters": {
+        "merchantParam1": "value1"
+      }
+    },
+    "tenant": "APPDIRECT",
+    "merchantOfRecordId": "APPDIRECT",
+    "merchantOfRecordType": "TENANT",
+    "metadata": {
+      "orderCode": "12345"
+    }
+  }
+})
+
+
+@app.route('/refunds/<refundId>', methods=['POST'])
+def refundId(refundId):
+    print("/refundId++++++++++++++++++++++")
+    print(refundId)
+    print("Request Headers:", request.headers)
+    print("Request JSON:", request)
+    print("/refundId++++++++++++++++++++++")
+    return jsonify({
+  "PaymentMethod": {
+    "type": "CARD",
+    "token": "tokenId",
+    "properties": {
+      "number": "4111111111111111",
+      "securityCode": "123",
+      "cardHolderName": "Bob Dylan",
+      "expirationMonth": "5",
+      "expirationYear": "2019"
+    }
+  },
+  "connectorInvocationContext": {
+    "config": {
+      "merchantParameters": {
+        "merchantParam1": "value1"
+      }
+    },
+    "tenant": "APPDIRECT",
+    "merchantOfRecordId": "APPDIRECT",
+    "merchantOfRecordType": "TENANT"
+  }
+})
+
+
+@app.route('/paymentMethods/import', methods=['POST'])
+def paymentMethodsImport():
+    print("/paymentMethodsImport++++++++++++++++++++++")
+    print("Request Headers:", request.headers)
+    print("Request JSON:", request)
+    print("/paymentMethodsImport++++++++++++++++++++++")
+    return jsonify({
+  "paymentMethodType": "CARD",
+  "companyUuid": "59bacce6-3807-4d1f-9a98-b82a09bdab60",
+  "userUuid": "d7148330-d372-412a-b14c-81b92851af68",
+  "token": "cbcfcd41-6029-49fe-88ab-7ee0803e401c",
+  "locale": "de-DE",
+  "properties": {
+    "firstName": "Lorel",
+    "lastName": "Ipsum",
+    "vatID": 123,
+    "invoiceEmail": "lorel.ipsum@appdirect.com"
+  },
+  "billingAddress": {
+    "city": "Montreal",
+    "companyName": "DT",
+    "country": "DE",
+    "street1": "Gendarmenmarkt",
+    "zip": "10115",
+    "salutation": "Company",
+    "phone": "+4912345678",
+    "region": "Berlin"
+  },
+  "connectorInvocationContext": {
+    "config": {
+      "merchantParameters": {
+        "merchantParam1": "value1"
+      }
+    },
+    "tenant": "APPDIRECT",
+    "merchantOfRecordId": "APPDIRECT",
+    "merchantOfRecordType": "TENANT",
+    "connectorId": "6a9267f3-6f37-4a33-863e-e1fe99fa1bf6"
+  }
+})
+
+
+@app.route('/paymentMethods/initRedirect', methods=['POST'])
+def paymentMethodsInitRedirect():
+    print("/paymentMethodsInitRedirect++++++++++++++++++++++")
+    print("Request Headers:", request.headers)
+    print("Request JSON:", request)
+    print("/paymentMethodsInitRedirect++++++++++++++++++++++")
+    return jsonify({
+  "partyType": "USER",
+  "partyId": "da2bf844-5058-4a4d-bd57-0b1e82838f1f",
+  "ownerUserId": "4db155c6-4459-46e3-984f-fdb3e4a1a2e6",
+  "ownerCompanyId": "15b26f6b-f252-4b78-890b-942aaf9a9983",
+  "userFlow": "BILLING_INFO",
+  "isSessionImpersonated": False,
+  "isChannelAssistedFlow": False,
+  "isResellerAssistedFlow": False,
+  "paymentMethodType": "SNAP",
+  "returnUrlSuccess": "https://success.com",
+  "returnUrlFailure": "https://failure.com",
+  "locale": "en-US",
+  "connectorInvocationContext": {
+    "config": {
+      "merchantParameters": {
+        "merchantParam1": "value1"
+      }
+    },
+    "tenant": "APPDIRECT",
+    "merchantOfRecordId": "APPDIRECT",
+    "merchantOfRecordType": "TENANT"
+  },
+  "customAttributeProperties": {
+    "USER": {
+      "properties": {
+        "userCustomAttribute1": "value1"
+      }
+    }
+  }
+})
+
+
+@app.route('/paymentMethods/finalizeRedirect', methods=['POST'])
+def paymentMethodsFinalizeRedirect():
+    print("/paymentMethodsFinalizeRedirect++++++++++++++++++++++")
+    print("Request Headers:", request.headers)
+    print("Request JSON:", request)
+    print("/paymentMethodsFinalizeRedirect++++++++++++++++++++++")
+    return jsonify({
+  "parameters": {
+    "adPaymentMethodId": "47d1ed9a-7e89-49f5-8724-b057a49abb8c"
+  },
+  "connectorInvocationContext": {
+    "config": {
+      "merchantParameters": {
+        "merchantParam1": "value1"
+      }
+    },
+    "tenant": "APPDIRECT",
+    "merchantOfRecordId": "APPDIRECT",
+    "merchantOfRecordType": "TENANT",
+    "companyUuid": "015c0cb6-ba73-45d9-bab1-4278a8513c10",
+    "userUuid": "700fba30-0aab-4eae-b09a-1dc961ed6f11"
+  }
+})
+
+
+@app.route('/notifications', methods=['POST'])
+def notifications():
+    print("/notifications++++++++++++++++++++++")
+    print("Request Headers:", request.headers)
+    print("Request JSON:", request)
+    print("/notifications++++++++++++++++++++++")
+    return jsonify({
+  "gatewayQueryParams": {
+    "referenceNumber": "1022778335"
+  },
+  "gatewayPayload": "payload",
+  "gatewayHeaders": {
+    "Webhook-Signature": [
+      "HMAC-SHA1"
+    ]
+  },
+  "tenant": "APPDIRECT"
+})
+
 
 
     
