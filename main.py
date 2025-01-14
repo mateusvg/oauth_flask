@@ -48,6 +48,7 @@ def generate_token():
     print("/token++++++++++++++++++++++")
     print("Request Headers:", request.headers)
     print("Request JSON:", request.get_json())
+    print("/token++++++++++++++++++++++")
     return jsonify({
     "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJTT3VBV0VZTjlOVGU4U3pXODRhcUp0U0ZzSVF3YWs2QmhndTJCd2JfaTZNIn0.eyJleHAiOjE3MzY1MTIyNjMsImlhdCI6MTczNjQyNTg2MywianRpIjoiZGUzYzU3NDctOGU0Ny00Y2I3LThjZDgtNzNhYjk2ODdmYWJhIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLnRlbGVjYWxsLXBvYy5zbWFydHBsYWNlLmNsb3VkL3JlYWxtcy9tYXN0ZXIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOTRjMTE3MTQtNTM4YS00ZjE3LWE1YjEtMWM3Y2M3ODdjOWVkIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiYWRtaW4tdWkiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsImh0dHBzOi8vYWRtaW4tdWkudGVsZWNhbGwtcG9jLnNtYXJ0cGxhY2UuY2xvdWQiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtbWFzdGVyIiwib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFkbWluLXVpIjp7InJvbGVzIjpbInVtYV9wcm90ZWN0aW9uIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJjbGllbnRIb3N0IjoiMTc5LjgzLjUuMTUwIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtYWRtaW4tdWkiLCJjbGllbnRBZGRyZXNzIjoiMTc5LjgzLjUuMTUwIiwiY2xpZW50X2lkIjoiYWRtaW4tdWkifQ.DjT2b1UabHAeyffm0irnqUaLWr5X0-VGolmlM-WMPwty7Jv3okV09Jb_C_CeBiC0uZtxdyAqkzB6VEovDTMD2WH3h6_wm1yA3UG_3Ht8q9cwG_Tdtgte24tpEhkGuJF645OLzJzuN0tiEw82rqokqEV0JMScNdw8LHSLL34N1kBr93xQMR-1w-PfdV85AS1BSBc7g1JDrh4QGmxZksj82d2cWaPq7LpclyB_S9UmSDxf6zI0x-ShJQFQvZ-CnQqfMlREoHwGV5P30E3zayPcIiuxYBEhJIbmYdbJQE7Txx7DtP9mIiNjhGzpKycaNVGDAeU9mTlwS3-qmwYcBNxmsA",
     "expires_in": 86400,
@@ -75,7 +76,7 @@ def home():
 def capabilities():
     print("/capabilities++++++++++++++++++++++")
     print("Request Headers:", request.headers)
-    print("Request JSON:", request.get_json())
+    print("Request JSON:", request)
     print("/capabilities++++++++++++++++++++++")
     return jsonify(
   {
