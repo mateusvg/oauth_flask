@@ -75,7 +75,7 @@ def home():
     return response
 
 @app.route('/oauth2/config/gocardless/setup', methods=['POST'])
-def home():
+def setup():
     print("Request Headers:", request.headers)
     print("Request JSON:", request.get_json())
     response =  jsonify({
