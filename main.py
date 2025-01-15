@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
 
@@ -73,6 +73,32 @@ def home():
     "scope": "profile email"})
     print("Response JSON:", response.get_json())
     return response
+  
+@app.route('/tokens/form.html', methods=['POST'])
+def get_html_form():
+    try:
+        # Obtém os dados do corpo da requisição
+        data = request.json
+        if not data:
+            return jsonify({"error": "Bad Request", "message": "Request body is missing"}), 400
+        
+        # Verifica se o contexto necessário está presente
+        context = data.get("connectorInvocationContext")
+        if not context:
+            return jsonify({"error": "Bad Request", "message": "Missing 'connectorInvocationContext'"}), 400
+        
+        # Extrai informações específicas do contexto
+        tenant = context.get("tenant", "Unknown Tenant")
+        merchant_id = context.get("merchantOfRecordId", "Unknown Merchant")
+        
+        # Renderiza o template HTML com os dados fornecidos
+        return render_template(
+            "form.html",
+            tenant=tenant,
+            merchant_id=merchant_id
+        ), 200
+    except Exception as e:
+        return jsonify({"error": "ServerError", "message": str(e)}), 500
 
 @app.route('/oauth2/config/gocardless/setup', methods=['POST'])
 def setup():
